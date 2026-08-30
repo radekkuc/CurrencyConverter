@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<head>
+    <title>Welcome</title>
+    <link rel = "stylesheet" href = "stylesheet.css">
+    <script src = "script.js" defer></script>     
+</head>
+<body> 
+    <h1 id = "converter-header">Currency Converter</h1>
+
+    <div id = "converter-summary">
+        <div id = "source-summary">
+            <span id = "source-amount-summary"> 1 </span>
+            <span id = "source-currency-summary"> USD </span>
+        </div>
+        <div>costs</div>
+        <div id = "target-summary">
+            <span id = "target-amount-summary"> 0.86 </span>
+            <span id = "target-currency-summary"> EUR </span>
+        </div>
+    </div>
+
+    <div id = "converter-controler">
+        <input type= "number" id = "source-amount">
+        <select id = "source-currency-selector">
+        </select>        
+        <button id = "swap-currencies-button" onclick="swapCurrenciesButtonClick()">
+            <img src = images/transferArrows.png alt = "Invert currencies">
+        </button>
+        <input type = "number" id = "target-amount">
+        <select id = "target-currency-selector">
+        </select>        
+    </div>
+    
+
+    
+</body>

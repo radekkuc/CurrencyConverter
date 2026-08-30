@@ -1,0 +1,28 @@
+#converter-header {
+    border: 5px;
+    border-style: double;
+    border-color: darkblue;
+    background-color: lightblue;
+}
+
+body {
+    text-align: center;
+    background-color: rgb(155, 230, 255);
+}
+
+#swap-currencies-button img {
+    width: 20px;
+    height: auto;
+}
+
+#secondValueText {
+    font-size: 30px;
+}
+
+#converter-controler {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 20px;
+}
