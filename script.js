@@ -10,6 +10,8 @@ const targetCurrencySelector = document.getElementById("target-currency-selector
 const sourceCurrencySummary = document.getElementById("source-currency-summary");
 const targetCurrencySummary = document.getElementById("target-currency-summary");
 
+const swapCurrenciesButton = document.getElementById("swap-currencies-button");
+
 
 const currencies = [
     "EUR",
@@ -22,16 +24,13 @@ for(const currency of currencies) {
     const option = document.createElement("option");
     option.value = currency;
     option.textContent = currency;
-
     sourceCurrencySelector.appendChild(option);
 }
-
 
 for(const currency of currencies) {
     const option = document.createElement("option");
     option.value = currency;
     option.textContent = currency;
-
     targetCurrencySelector.appendChild(option);
 }
 
@@ -41,24 +40,30 @@ const convertedValue = providedValue * apiRate;
 
 sourceAmountInput.value = providedValue;
 targetAmountInput.value = convertedValue;
+sourceCurrencySelector.value = "USD";
+targetCurrencySelector.value = "EUR";
 
-sourceAmountInput.addEventListener(
-    "input",
-    changeSourceInput
-)
+sourceCurrencySelector.addEventListener("change", () => {
+    sourceCurrencySummary.textContent = sourceCurrencySelector.value;
+});
 
-targetAmountInput.addEventListener(
-    "input",
-    changeTargetInput
-)
+targetCurrencySelector.addEventListener( "change", () => {
+    targetCurrencySummary.textContent = targetCurrencySelector.value;
+});
 
-function changeSourceInput() {
-    console.log("Change detected");
-}
+swapCurrenciesButton.addEventListener("click", swapCurrenciesButtonClick);
 
-function changeTargetInput() {
-    console.log("Change detected");
-}
+sourceAmountInput.addEventListener("input", () => {
+    targetAmountInput.value = sourceAmountInput.valueAsNumber * apiRate;
+    sourceAmountSummary.textContent = sourceAmountInput.value;
+    targetAmountSummary.textContent = targetAmountInput.value;
+});
+
+targetAmountInput.addEventListener("input", () => {
+    sourceAmountInput.value = targetAmountInput.valueAsNumber / apiRate;
+    targetAmountSummary.textContent = targetAmountInput.value;
+    sourceAmountSummary.textContent = sourceAmountInput.value; 
+});
 
 function swapCurrenciesButtonClick() {
    const sourceCurrencyValue = sourceCurrencySelector.value;
@@ -69,20 +74,3 @@ function swapCurrenciesButtonClick() {
    sourceCurrencySummary.textContent = targetCurrencySummary.textContent;
    targetCurrencySummary.textContent = sourceCurrencyText;  
 }
-
-// EVENT LISTENER FOR CHANGED CURRENCY SO SUMMARY CHANGES AS WELL
-// 1 USD
-// costs
-// 0.86 EUR
-
-    // const convertedValue = sourceAmountInput.value * apiRate;
-    // const fromCurrSel = sourceCurrencySelector.value;
-    // const toCurrSel = targetCurrencySelector.value;
-
-    // targetAmountInput.value = convertedValue;
-
-    // sourceCurrencySummary.textContent = fromCurrSel;
-    // targetCurrencySummary.textContent = toCurrSel;
-
-    // sourceAmountSummary.textContent = sourceAmountInput.value;
-    // targetAmountSummary.textContent = convertedValue; 

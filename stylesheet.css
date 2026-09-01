@@ -15,10 +15,6 @@ body {
     height: auto;
 }
 
-#secondValueText {
-    font-size: 30px;
-}
-
 #converter-controler {
     display: flex;
     align-items: center;
