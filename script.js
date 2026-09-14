@@ -12,7 +12,7 @@ const targetCurrencySummary = document.getElementById("target-currency-summary")
 
 const swapCurrenciesButton = document.getElementById("swap-currencies-button");
 
-
+const baseUrl = "https://api.frankfurter.dev/v2/rate";
 const currencies = [
     "EUR",
     "USD",
@@ -34,43 +34,88 @@ for(const currency of currencies) {
     targetCurrencySelector.appendChild(option);
 }
 
-const providedValue = 1;
-const apiRate = 0.86; 
-const convertedValue = providedValue * apiRate;
+let sourceValue = 1;
+let exchangeRate = 0.8; 
+let targetValue = sourceValue * exchangeRate;
 
-sourceAmountInput.value = providedValue;
-targetAmountInput.value = convertedValue;
+let latestCurrencySource = sourceCurrencySelector.value;
+let latestCurrencyTarget = targetCurrencySelector.value;
+
+sourceAmountInput.value = sourceValue;
+targetAmountInput.value = targetValue;
 sourceCurrencySelector.value = "USD";
 targetCurrencySelector.value = "EUR";
 
-sourceCurrencySelector.addEventListener("change", () => {
-    sourceCurrencySummary.textContent = sourceCurrencySelector.value;
-});
+sourceCurrencySelector.addEventListener("change", sourceSelectorChanged);
 
-targetCurrencySelector.addEventListener( "change", () => {
-    targetCurrencySummary.textContent = targetCurrencySelector.value;
-});
+targetCurrencySelector.addEventListener("change", targetSelectorChanged);
 
 swapCurrenciesButton.addEventListener("click", swapCurrenciesButtonClick);
 
-sourceAmountInput.addEventListener("input", () => {
-    targetAmountInput.value = sourceAmountInput.valueAsNumber * apiRate;
-    sourceAmountSummary.textContent = sourceAmountInput.value;
-    targetAmountSummary.textContent = targetAmountInput.value;
-});
+sourceAmountInput.addEventListener("input", sourceInputChanged);
 
-targetAmountInput.addEventListener("input", () => {
-    sourceAmountInput.value = targetAmountInput.valueAsNumber / apiRate;
-    targetAmountSummary.textContent = targetAmountInput.value;
-    sourceAmountSummary.textContent = sourceAmountInput.value; 
-});
+targetAmountInput.addEventListener("input", targetInputChanged);
 
-function swapCurrenciesButtonClick() {
-   const sourceCurrencyValue = sourceCurrencySelector.value;
-   sourceCurrencySelector.value = targetCurrencySelector.value;
-   targetCurrencySelector.value = sourceCurrencyValue;
+async function swapCurrenciesButtonClick() {
+    const sourceCurrencyValue = sourceCurrencySelector.value;
+    sourceCurrencySelector.value = targetCurrencySelector.value;
+    targetCurrencySelector.value = sourceCurrencyValue;
 
-   const sourceCurrencyText = sourceCurrencySummary.textContent;
-   sourceCurrencySummary.textContent = targetCurrencySummary.textContent;
-   targetCurrencySummary.textContent = sourceCurrencyText;  
+    const sourceCurrencyText = sourceCurrencySummary.textContent;
+    sourceCurrencySummary.textContent = targetCurrencySummary.textContent;
+    targetCurrencySummary.textContent = sourceCurrencyText;  
+
+    exchangeRate = await getExchangeRate();
+    targetAmountInput.value = exchangeRate * sourceAmountInput.value;   
+    targetAmountSummary.textContent = targetAmountInput.value;     
 }
+
+async function targetInputChanged() {
+    // if latest currency same as current do not make new api call
+    exchangeRate = await getExchangeRate();
+    sourceAmountInput.value = targetAmountInput.value / exchangeRate;
+    sourceAmountSummary.textContent = sourceAmountInput.value;
+    targetAmountSummary.textContent = targetAmountInput.value;   
+}
+
+async function sourceInputChanged() {
+    // if latest currency same as current do not make new api call
+    exchangeRate = await getExchangeRate();
+    targetAmountInput.value = exchangeRate * sourceAmountInput.value;   
+    sourceAmountSummary.textContent = sourceAmountInput.value;
+    targetAmountSummary.textContent = targetAmountInput.value;     
+}
+
+async function sourceSelectorChanged() {
+    sourceCurrencySummary.textContent = sourceCurrencySelector.value;
+    latestCurrencySource = sourceCurrencySelector.value;
+    exchangeRate = await getExchangeRate();
+    targetAmountInput.value = exchangeRate * sourceAmountInput.value;  
+    targetAmountSummary.textContent = targetAmountInput.value;
+}
+
+async function targetSelectorChanged() {
+    targetCurrencySummary.textContent = targetCurrencySelector.value;
+    latestCurrencyTarget = targetCurrencySelector.value;
+    exchangeRate = await getExchangeRate();
+    targetAmountInput.value = exchangeRate * sourceAmountInput.value;
+    targetAmountSummary.textContent = targetAmountInput.value;   
+}
+
+async function getExchangeRate() {
+    try {
+        const url = baseUrl + `/${sourceCurrencySelector.value}/${targetCurrencySelector.value}`;
+        const apiResponse = await fetch(url);
+        const jsonObject = await apiResponse.json(apiResponse);
+        return jsonObject.rate;
+    }
+    catch(error) {
+        console.error(error);
+    }
+}
+
+function updateSummary() {
+
+}
+
+// function for conversion 
