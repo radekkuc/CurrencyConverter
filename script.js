@@ -43,16 +43,12 @@ async function swapCurrenciesButtonClick() {
     targetAmountSummary.textContent = targetAmountInput.value;     
 }
 
-async function targetInputChanged() {
-    // if latest currency same as current do not make new api call
-    exchangeRate = await getExchangeRate();
+function targetInputChanged() {
     convertFromTarget();
     updateSummary();   
 }
 
-async function sourceInputChanged() {
-    // if latest currency same as current do not make new api call
-    exchangeRate = await getExchangeRate();
+function sourceInputChanged() {
     convertFromSource();
     updateSummary();     
 }
@@ -65,7 +61,7 @@ async function sourceSelectorChanged() {
 
 async function targetSelectorChanged() {
     exchangeRate = await getExchangeRate();
-    convertFromTarget();
+    convertFromSource();
     updateSummary(); 
 }
 
@@ -91,10 +87,6 @@ async function getCurrencies() {
     catch(error) {
         console.error(error);
     }
-}
-
-async function initializeCurrencies() {
-
 }
 
 function updateSummary() {
