@@ -26,9 +26,9 @@ targetAmountInput.value = targetValue;
 sourceCurrencySelector.value = "USD";
 targetCurrencySelector.value = "EUR";
 
-sourceCurrencySelector.addEventListener("change", sourceSelectorChanged);
+sourceCurrencySelector.addEventListener("change", selectorCurrencyChanged);
 
-targetCurrencySelector.addEventListener("change", targetSelectorChanged);
+targetCurrencySelector.addEventListener("change", selectorCurrencyChanged);
 
 swapCurrenciesButton.addEventListener("click", swapCurrenciesButtonClick);
 
@@ -53,16 +53,10 @@ function sourceInputChanged() {
     updateSummary();     
 }
 
-async function sourceSelectorChanged() {
+async function selectorCurrencyChanged() {
     exchangeRate = await getExchangeRate();
     convertFromSource();
     updateSummary();
-}
-
-async function targetSelectorChanged() {
-    exchangeRate = await getExchangeRate();
-    convertFromSource();
-    updateSummary(); 
 }
 
 async function getExchangeRate() {
