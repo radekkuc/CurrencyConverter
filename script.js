@@ -14,17 +14,7 @@ const swapCurrenciesButton = document.getElementById("swap-currencies-button");
 
 const baseUrl = "https://api.frankfurter.dev/v2/rate";
 
-let sourceValue = 1;
-let exchangeRate = 0.8; 
-let targetValue = sourceValue * exchangeRate;
-
-let latestCurrencySource = sourceCurrencySelector.value;
-let latestCurrencyTarget = targetCurrencySelector.value;
-
-sourceAmountInput.value = sourceValue;
-targetAmountInput.value = targetValue;
-sourceCurrencySelector.value = "USD";
-targetCurrencySelector.value = "EUR";
+let exchangeRate;
 
 sourceCurrencySelector.addEventListener("change", selectorCurrencyChanged);
 
@@ -37,10 +27,17 @@ sourceAmountInput.addEventListener("input", sourceInputChanged);
 targetAmountInput.addEventListener("input", targetInputChanged);
 
 async function swapCurrenciesButtonClick() {
-    swapCurrency();
-    exchangeRate = await getExchangeRate();
-    convertFromSource();   
-    targetAmountSummary.textContent = targetAmountInput.value;     
+    try {
+        swapCurrency();
+        const newRate = await getExchangeRate();
+        exchangeRate = newRate;
+        convertFromSource();   
+        updateSummary();
+    }
+    catch(error) {
+        console.error(error);
+        swapCurrency();
+    }       
 }
 
 function targetInputChanged() {
@@ -54,33 +51,35 @@ function sourceInputChanged() {
 }
 
 async function selectorCurrencyChanged() {
-    exchangeRate = await getExchangeRate();
-    convertFromSource();
-    updateSummary();
+    try {
+        const newRate = await getExchangeRate();
+        exchangeRate = newRate;
+        convertFromSource();
+        updateSummary();        
+    }
+    catch(error) {
+        console.error(error);
+    }
 }
 
 async function getExchangeRate() {
-    try {
-        const url = baseUrl + `/${sourceCurrencySelector.value}/${targetCurrencySelector.value}`;
-        const apiResponse = await fetch(url);
-        const jsonObject = await apiResponse.json();
-        return jsonObject.rate;
+    const url = baseUrl + `/${sourceCurrencySelector.value}/${targetCurrencySelector.value}`;
+    const apiResponse = await fetch(url);
+    if(!apiResponse.ok) {
+        throw new Error(`HTTP error: ${apiResponse.status}`);
     }
-    catch(error) {
-        console.error(error);
-    }
+    const jsonObject = await apiResponse.json();
+    return jsonObject.rate;
 }
 
 async function getCurrencies() {
-    try {
-        const url = "https://api.frankfurter.dev/v2/currencies";
-        const apiResponse = await fetch(url);
-        const jsonObject = await apiResponse.json();
-        return jsonObject;
+    const url = "https://api.frankfurter.dev/v2/currencies";
+    const apiResponse = await fetch(url);
+    if(!apiResponse.ok) {
+        throw Error(`HTTP error: ${apiResponse.status}`);
     }
-    catch(error) {
-        console.error(error);
-    }
+    const jsonObject = await apiResponse.json();
+    return jsonObject;
 }
 
 function updateSummary() {
@@ -109,25 +108,32 @@ function swapCurrency() {
     targetCurrencySummary.textContent = sourceCurrencyText;  
 }
 
+function loadCurrencies(selector, currencies) {
+    for(const currency of currencies) {
+        const option = document.createElement("option");
+        option.value = currency;
+        option.textContent = currency;
+        selector.appendChild(option);
+    }    
+}
 
 async function main() {
-    const currencyObject = await getCurrencies();
-    const currencies = currencyObject.map(currency => currency.iso_code);
-
-    for(const currency of currencies) {
-        const option = document.createElement("option");
-        option.value = currency;
-        option.textContent = currency;
-        sourceCurrencySelector.appendChild(option);
+    try {
+        const currencyObject = await getCurrencies();
+        const currencies = currencyObject.map(currency => currency.iso_code);
+        loadCurrencies(sourceCurrencySelector, currencies);
+        loadCurrencies(targetCurrencySelector, currencies);
+        sourceAmountInput.value = 1;
+        sourceCurrencySelector.value = "EUR";
+        targetCurrencySelector.value = "USD"
+        const newRate = await getExchangeRate();
+        exchangeRate = newRate;
+        convertFromSource();
+        updateSummary();
     }
-
-    for(const currency of currencies) {
-        const option = document.createElement("option");
-        option.value = currency;
-        option.textContent = currency;
-        targetCurrencySelector.appendChild(option);
+    catch(error) {
+        console.error(error);
     }
-
 }
 
 main();
