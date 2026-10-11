@@ -15,6 +15,8 @@ const swapCurrenciesButton = document.getElementById("swap-currencies-button");
 const baseUrl = "https://api.frankfurter.dev/v2/rate";
 
 let exchangeRate;
+let lastSourceSelector;
+let lastTargetSelector;
 
 sourceCurrencySelector.addEventListener("change", selectorCurrencyChanged);
 
@@ -31,6 +33,7 @@ async function swapCurrenciesButtonClick() {
         swapCurrency();
         const newRate = await getExchangeRate();
         exchangeRate = newRate;
+        storeSelectorCurrency();
         convertFromSource();   
         updateSummary();
     }
@@ -54,11 +57,13 @@ async function selectorCurrencyChanged() {
     try {
         const newRate = await getExchangeRate();
         exchangeRate = newRate;
+        storeSelectorCurrency();
         convertFromSource();
         updateSummary();        
     }
     catch(error) {
         console.error(error);
+        restoreSelectorCurrency();
     }
 }
 
@@ -102,10 +107,6 @@ function swapCurrency() {
     const sourceCurrencyValue = sourceCurrencySelector.value;
     sourceCurrencySelector.value = targetCurrencySelector.value;
     targetCurrencySelector.value = sourceCurrencyValue;
-
-    const sourceCurrencyText = sourceCurrencySummary.textContent;
-    sourceCurrencySummary.textContent = targetCurrencySummary.textContent;
-    targetCurrencySummary.textContent = sourceCurrencyText;  
 }
 
 function loadCurrencies(selector, currencies) {
@@ -115,6 +116,16 @@ function loadCurrencies(selector, currencies) {
         option.textContent = currency;
         selector.appendChild(option);
     }    
+}
+
+function restoreSelectorCurrency() {
+    sourceCurrencySelector.value = lastSourceSelector;
+    targetCurrencySelector.value = lastTargetSelector;
+}
+
+function storeSelectorCurrency() {
+    lastSourceSelector = sourceCurrencySelector.value;
+    lastTargetSelector = targetCurrencySelector.value;
 }
 
 async function main() {
@@ -128,6 +139,7 @@ async function main() {
         targetCurrencySelector.value = "USD"
         const newRate = await getExchangeRate();
         exchangeRate = newRate;
+        storeSelectorCurrency();
         convertFromSource();
         updateSummary();
     }
