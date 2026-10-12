@@ -1,24 +1,148 @@
-#converter-header {
-    border: 5px;
-    border-style: double;
-    border-color: darkblue;
-    background-color: lightblue;
+:root {
+    font-family: Inter, "Segoe UI", Arial, sans-serif;
+    color: #edf5ff;
+    background: #07182e;
+}
+
+* {
+    box-sizing: border-box;
 }
 
 body {
+    min-height: 100vh;
+    margin: 0;
+    padding: 48px 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 24px;
+    background: radial-gradient(circle at 50% 0%, #24558d 0, #102d50 42%, #07182e 100%);
+}
+
+#converter-header {
+    margin: 0 0 12px;
+    color: #f1f7ff;
+    font-size: clamp(2rem, 5vw, 3rem);
+    font-weight: 750;
+    letter-spacing: -0.04em;
     text-align: center;
-    background-color: rgb(155, 230, 255);
 }
 
-#swap-currencies-button img {
-    width: 20px;
-    height: auto;
-}
-
+#converter-summary,
 #converter-controler {
+    width: min(100%, 900px);
+    background: #15375f;
+    border: 1px solid #32618f;
+    border-radius: 20px;
+    box-shadow: 0 18px 44px rgba(2, 12, 29, 0.32);
+}
+
+#converter-summary {
+    min-height: 104px;
+    padding: 24px;
     display: flex;
     align-items: center;
     justify-content: center;
+    flex-wrap: wrap;
     gap: 10px;
-    margin-top: 20px;
+    font-size: clamp(1.25rem, 3vw, 1.8rem);
+    font-weight: 650;
+    text-align: center;
+}
+
+#converter-summary > div:nth-child(2) {
+    color: #b8cce3;
+    font-size: 0.85em;
+    font-weight: 400;
+}
+
+#target-summary {
+    color: #85ceff;
+}
+
+#converter-controler {
+    padding: 32px;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(90px, 120px) 56px minmax(0, 1fr) minmax(90px, 120px);
+    grid-template-areas: "source-amount source-currency swap target-amount target-currency";
+    align-items: center;
+    gap: 12px;
+}
+
+#source-amount { grid-area: source-amount; }
+#source-currency-selector { grid-area: source-currency; }
+#swap-currencies-button { grid-area: swap; }
+#target-amount { grid-area: target-amount; }
+#target-currency-selector { grid-area: target-currency; }
+
+#converter-controler input,
+#converter-controler select {
+    width: 100%;
+    min-width: 0;
+    height: 54px;
+    padding: 0 14px;
+    border: 1px solid #4777a8;
+    border-radius: 12px;
+    background: #0d294a;
+    color: #f1f7ff;
+    font: inherit;
+    font-size: 1rem;
+}
+
+#converter-controler input:focus,
+#converter-controler select:focus {
+    outline: 3px solid rgba(113, 191, 255, 0.3);
+    border-color: #7bc3ff;
+    background: #143960;
+}
+
+#swap-currencies-button {
+    width: 56px;
+    height: 54px;
+    padding: 0;
+    display: grid;
+    place-items: center;
+    border: 1px solid #69a9e4;
+    border-radius: 12px;
+    background: #2467a7;
+    cursor: pointer;
+    transition: background 150ms ease, transform 150ms ease;
+}
+
+#swap-currencies-button:hover {
+    background: #3282c6;
+    transform: translateY(-2px);
+}
+
+#swap-currencies-button:focus-visible {
+    outline: 3px solid rgba(132, 205, 255, 0.55);
+    outline-offset: 2px;
+}
+
+#swap-currencies-button img {
+    width: 24px;
+    height: auto;
+    filter: invert(1);
+}
+
+@media (max-width: 700px) {
+    #converter-controler {
+        padding: 20px;
+        grid-template-columns: minmax(0, 1fr) minmax(90px, 120px);
+        grid-template-areas:
+            "source-amount source-currency"
+            "swap swap"
+            "target-amount target-currency";
+    }
+
+    #swap-currencies-button {
+        justify-self: center;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    #swap-currencies-button {
+        transition: none;
+    }
 }

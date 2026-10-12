@@ -31,8 +31,7 @@ targetAmountInput.addEventListener("input", targetInputChanged);
 async function swapCurrenciesButtonClick() {
     try {
         swapCurrency();
-        const newRate = await getExchangeRate();
-        exchangeRate = newRate;
+        exchangeRate = 1 / exchangeRate;
         storeSelectorCurrency();
         convertFromSource();   
         updateSummary();
@@ -55,8 +54,13 @@ function sourceInputChanged() {
 
 async function selectorCurrencyChanged() {
     try {
-        const newRate = await getExchangeRate();
-        exchangeRate = newRate;
+        if(sourceCurrencySelector.value === targetCurrencySelector.value) {
+            exchangeRate = 1;
+        }
+        else {
+            const newRate = await getExchangeRate();
+            exchangeRate = newRate;
+        }
         storeSelectorCurrency();
         convertFromSource();
         updateSummary();        
